@@ -1,0 +1,18 @@
+- name: recreate directory for generated nodes
+  file:
+    name: "{{ inventory.nodes_base_uri }}"
+    state: "{{ item }}"
+  with_items:
+    - absent
+    - directory
+
+- name: create nodes in reclass inventory
+  template:
+    src: node.yml.jinja
+    dest: "{{ inventory.nodes_base_uri }}/{{ item.name }}.yml"
+  with_items: "{{ inventory.nodes }}"
+
+- name: create local ssh_config
+  template:
+    src: ssh_config.jinja
+    dest: ./.ssh_config

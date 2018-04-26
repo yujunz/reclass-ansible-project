@@ -1,0 +1,4 @@
+applications:
+  - ping
+parameters:
+  ansible_ssh_common_args: "-F .ssh_config"

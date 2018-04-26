@@ -1,0 +1,4 @@
+*.retry
+.facts.d
+.ssh_config
+inventory/**/_*

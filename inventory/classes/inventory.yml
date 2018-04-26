@@ -1,0 +1,12 @@
+applications:
+  - inventory
+parameters:
+  inventory:
+    nodes_base_uri: ${_params:inventory_base_uri}/nodes/_generated
+    nodes:
+      - name: minion-1
+        host: minion-1
+        user: ubuntu
+      - name: minion-2
+        host: minion-2
+        user: ubuntu

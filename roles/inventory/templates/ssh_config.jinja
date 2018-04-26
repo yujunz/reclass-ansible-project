@@ -1,0 +1,10 @@
+{% for node in inventory.nodes %}
+Host {{ node.name }}
+{% if 'host' in node %} HostName {{ node.host }}
+{% endif %}
+{% if 'port' in node %} Port {{ node.port }}
+{% endif %}
+{% if 'user' in node %} User {{ node.user }}
+{% endif %}
+
+{% endfor %}

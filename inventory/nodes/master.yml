@@ -1,0 +1,8 @@
+classes:
+  - node
+parameters:
+  ansible_ssh_common_args: ""
+  ansible_connection: local
+  ansible_host: master
+  ansible_user: ubuntu
+  ansible_port: 22

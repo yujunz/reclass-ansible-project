@@ -1,0 +1,6 @@
+classes:
+  - inventory
+parameters:
+  _params:
+    inventory_base_uri: inventory
+  ansible_connection: local
