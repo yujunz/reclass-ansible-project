@@ -75,11 +75,32 @@ ansible-role inventory
 NOTE: by default, `ansible-role` will select localhost as default target and
 generate the nodes in `inventory/nodes/_generated`.
 
-### Group variables
+### Host variables
 
-The group variables in Ansible are defined in a class,
+The full list of variables available to a specific host can be retrieved with
+`reclass-ansible --host HOSTNAME`. For example:
 
-For example, `inventory/classes/node.yml`
+``` yaml
+__reclass__:
+  applications:
+  - ping
+  classes:
+  - node
+  environment: ''
+  name: minion-1
+  node: _generated/minion-1
+  timestamp: Tue May 29 09:28:13 2018
+  uri: yaml_fs:///Users/yujunz/Workspace/reclass-ansible-project/inventory/nodes/_generated/minion-1.yml
+ansible_ssh_common_args: -F .ssh_config
+node:
+  host: minion-1
+  name: minion-1
+```
+
+Then you may use `{{ node.host }}` in Ansible playbook or templates.
+
+The equivalence for Ansible group variable is the parameters defined in class.
+For example:
 
 ``` yaml
 applications:
@@ -88,7 +109,7 @@ parameters:
   ansible_ssh_common_args: "-F .ssh_config"
 ```
 
-It applies `ansible_ssh_common_args` to all nodes if it includes class `node`
+It applies `ansible_ssh_common_args` to all nodes if it includes class `node`.
 
 ### Dump inventory
 
@@ -98,9 +119,108 @@ Use the following command to dump the whole inventory to console
 reclass --inventory
 ```
 
+An example output is as following:
+
+``` yaml
+__reclass__:
+  timestamp: Mon May 28 09:59:42 2018
+applications:
+  inventory:
+  - localhost
+  ping:
+  - master
+  - minion-1
+  - minion-2
+classes:
+  inventory:
+  - localhost
+  node:
+  - master
+  - minion-1
+  - minion-2
+nodes:
+  localhost:
+    __reclass__:
+      environment: base
+      name: localhost
+      node: ./localhost
+      timestamp: Mon May 28 09:59:42 2018
+      uri: yaml_fs:///Users/yujunz/Workspace/reclass-ansible-project/inventory/nodes/./localhost.yml
+    applications:
+    - inventory
+    classes:
+    - inventory
+    environment: base
+    parameters:
+      _params:
+        inventory_base_uri: inventory
+      ansible_connection: local
+      inventory:
+        nodes:
+        - host: minion-1
+          name: minion-1
+          user: ubuntu
+        - host: minion-2
+          name: minion-2
+          user: ubuntu
+        nodes_base_uri: inventory/nodes/_generated
+  master:
+    __reclass__:
+      environment: base
+      name: master
+      node: ./master
+      timestamp: Mon May 28 09:59:42 2018
+      uri: yaml_fs:///Users/yujunz/Workspace/reclass-ansible-project/inventory/nodes/./master.yml
+    applications:
+    - ping
+    classes:
+    - node
+    environment: base
+    parameters:
+      ansible_connection: local
+      ansible_host: master
+      ansible_port: 22
+      ansible_ssh_common_args: ''
+      ansible_user: ubuntu
+  minion-1:
+    __reclass__:
+      environment: base
+      name: minion-1
+      node: _generated/minion-1
+      timestamp: Mon May 28 09:59:42 2018
+      uri: yaml_fs:///Users/yujunz/Workspace/reclass-ansible-project/inventory/nodes/_generated/minion-1.yml
+    applications:
+    - ping
+    classes:
+    - node
+    environment: base
+    parameters:
+      ansible_ssh_common_args: -F .ssh_config
+      node:
+        host: minion-1
+        name: minion-1
+  minion-2:
+    __reclass__:
+      environment: base
+      name: minion-2
+      node: _generated/minion-2
+      timestamp: Mon May 28 09:59:42 2018
+      uri: yaml_fs:///Users/yujunz/Workspace/reclass-ansible-project/inventory/nodes/_generated/minion-2.yml
+    applications:
+    - ping
+    classes:
+    - node
+    environment: base
+    parameters:
+      ansible_ssh_common_args: -F .ssh_config
+      node:
+        host: minion-2
+        name: minion-2
+```
+
 It is quite useful to check the actual value of the parameters applied to a node.
 
-## Reclass essentials
+## Reclass Essentials
 
 The parameters are organized in reclass which is an “external node classifier”
 (ENC) as can be used with automation tools. There are two directories in reclass
@@ -116,6 +236,18 @@ For example, we assign `node` class to `master` to share the common parameters
 and applications but need a different value for `ansible_ssh_common_args`. Then
 we just simply assign a new value `ansible_ssh_common_args` in `master`
 definition.
+
+The author provided a comprehensive document to describe the
+[concept in reclass](https://reclass.pantsfullofunix.net/concepts.html).
+It helps you to understand the design philosophy of reclass. The key points are
+as below:
+
+| Concept     	| Description                                                                                                         	|
+|-------------	|---------------------------------------------------------------------------------------------------------------------	|
+| node        	| A node, usually a computer in your infrastructure                                                                   	|
+| class       	| A category, tag, feature, or role that applies to a node Classes may be nested, i.e. there can be a class hierarchy 	|
+| application 	| A specific set of behaviour to apply                                                                                	|
+| parameter   	| Node-specific variables, with inheritance throughout the class hierarchy.                                           	|
 
 ## Tips
 
